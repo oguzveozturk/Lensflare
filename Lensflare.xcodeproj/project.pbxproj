@@ -18,6 +18,9 @@
 		93EC3F2724F03FE400865151 /* LErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F2624F03FE400865151 /* LErrors.swift */; };
 		93EC3F2924F046E400865151 /* OverlayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F2824F046E400865151 /* OverlayModel.swift */; };
 		93EC3F3224F04D6400865151 /* OverlayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F3124F04D6400865151 /* OverlayCell.swift */; };
+		93EC3F3424F067FB00865151 /* BitmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F3324F067FB00865151 /* BitmapView.swift */; };
+		93EC3F3A24F06CF700865151 /* AlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F3924F06CF700865151 /* AlertService.swift */; };
+		93EC3F3C24F0735000865151 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F3B24F0735000865151 /* UIViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +37,9 @@
 		93EC3F2624F03FE400865151 /* LErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LErrors.swift; sourceTree = "<group>"; };
 		93EC3F2824F046E400865151 /* OverlayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayModel.swift; sourceTree = "<group>"; };
 		93EC3F3124F04D6400865151 /* OverlayCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayCell.swift; sourceTree = "<group>"; };
+		93EC3F3324F067FB00865151 /* BitmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapView.swift; sourceTree = "<group>"; };
+		93EC3F3924F06CF700865151 /* AlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertService.swift; sourceTree = "<group>"; };
+		93EC3F3B24F0735000865151 /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +73,8 @@
 		93EC3F0A24F03D4E00865151 /* Lensflare */ = {
 			isa = PBXGroup;
 			children = (
+				93EC3F3824F06CE700865151 /* Helpers */,
+				93EC3F3524F06A6400865151 /* Extensions */,
 				93EC3F2A24F0472F00865151 /* Network */,
 				93EC3F3024F0478800865151 /* Controller */,
 				93EC3F2E24F0476F00865151 /* View */,
@@ -101,6 +109,7 @@
 			children = (
 				93EC3F1924F03D5300865151 /* LaunchScreen.storyboard */,
 				93EC3F3124F04D6400865151 /* OverlayCell.swift */,
+				93EC3F3324F067FB00865151 /* BitmapView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -120,6 +129,22 @@
 				93EC3F0F24F03D4E00865151 /* ViewController.swift */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		93EC3F3524F06A6400865151 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				93EC3F3B24F0735000865151 /* UIViewController.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		93EC3F3824F06CE700865151 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				93EC3F3924F06CF700865151 /* AlertService.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -192,13 +217,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93EC3F3A24F06CF700865151 /* AlertService.swift in Sources */,
 				93EC3F1024F03D4E00865151 /* ViewController.swift in Sources */,
 				93EC3F0C24F03D4E00865151 /* AppDelegate.swift in Sources */,
+				93EC3F3C24F0735000865151 /* UIViewController.swift in Sources */,
 				93EC3F2524F03F6900865151 /* NetworkManager.swift in Sources */,
 				93EC3F1624F03D4E00865151 /* Lensflare.xcdatamodeld in Sources */,
 				93EC3F0E24F03D4E00865151 /* SceneDelegate.swift in Sources */,
 				93EC3F2924F046E400865151 /* OverlayModel.swift in Sources */,
 				93EC3F3224F04D6400865151 /* OverlayCell.swift in Sources */,
+				93EC3F3424F067FB00865151 /* BitmapView.swift in Sources */,
 				93EC3F2724F03FE400865151 /* LErrors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

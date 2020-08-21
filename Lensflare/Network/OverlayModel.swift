@@ -6,8 +6,8 @@
 //
 
 struct OverlayModel: Decodable {
-    let overlayId: Int
-    let overlayName:String
-    let overlayPreviewIconUrl: String
-    let overlayUrl: String
+    let overlayId: Int?
+    let overlayName:String?
+    let overlayPreviewIconUrl: String?
+    let overlayUrl: String?
 }

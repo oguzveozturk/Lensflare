@@ -5,7 +5,7 @@
 //  Created by Oguz on 21.08.2020.
 //
 
-import Foundation
+import UIKit
 
 final class NetworkManager {
     static let shared = NetworkManager()
@@ -54,6 +54,24 @@ final class NetworkManager {
                 }
             }
             task.resume()
+    }
+    
+    let imageCache = NSCache<NSString, UIImage>()
+    
+    func downloadImage(urlString: String?, completion: @escaping (_ image: UIImage?, _ error: Error? ) -> Void) {
+        guard let urlString = urlString, let url = URL(string: urlString) else { return }
+        DispatchQueue.global().async {
+            if let cachedImage = self.imageCache.object(forKey: url.absoluteString as NSString) {
+                completion(cachedImage, nil)
+            } else {
+                if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                    self.imageCache.setObject(image, forKey: url.absoluteString as NSString)
+                    completion(image, nil)
+                } else {
+                    completion(nil, LErrors.invalidData)
+                }
+            }
+        }
     }
 }
 
