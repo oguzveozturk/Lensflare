@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		93CEE7CE24F19C5D001DC401 /* UIImageExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7CD24F19C5D001DC401 /* UIImageExt.swift */; };
 		93EC3F0C24F03D4E00865151 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F0B24F03D4E00865151 /* AppDelegate.swift */; };
 		93EC3F0E24F03D4E00865151 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F0D24F03D4E00865151 /* SceneDelegate.swift */; };
 		93EC3F1024F03D4E00865151 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F0F24F03D4E00865151 /* ViewController.swift */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		93CEE7CD24F19C5D001DC401 /* UIImageExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExt.swift; sourceTree = "<group>"; };
 		93EC3F0824F03D4E00865151 /* Lensflare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lensflare.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93EC3F0B24F03D4E00865151 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		93EC3F0D24F03D4E00865151 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				93EC3F3B24F0735000865151 /* UIViewController.swift */,
+				93CEE7CD24F19C5D001DC401 /* UIImageExt.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -222,6 +225,7 @@
 				93EC3F0C24F03D4E00865151 /* AppDelegate.swift in Sources */,
 				93EC3F3C24F0735000865151 /* UIViewController.swift in Sources */,
 				93EC3F2524F03F6900865151 /* NetworkManager.swift in Sources */,
+				93CEE7CE24F19C5D001DC401 /* UIImageExt.swift in Sources */,
 				93EC3F1624F03D4E00865151 /* Lensflare.xcdatamodeld in Sources */,
 				93EC3F0E24F03D4E00865151 /* SceneDelegate.swift in Sources */,
 				93EC3F2924F046E400865151 /* OverlayModel.swift in Sources */,

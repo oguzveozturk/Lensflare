@@ -7,7 +7,13 @@
 
 import UIKit
 
+protocol ViewControllerDelegate:class {
+    func viewControllerDelegate(_ vc: ViewController, selected image: UIImage?)
+}
+
 final class ViewController: UIViewController {
+    
+    weak var delegate: ViewControllerDelegate?
     
     private var data: [OverlayModel] = [OverlayModel(overlayId: 0, overlayName: "None", overlayPreviewIconUrl: nil, overlayUrl: nil)]
         
@@ -23,26 +29,42 @@ final class ViewController: UIViewController {
         return cv
     }()
     
-    private var addImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.contentMode = .scaleAspectFit
-        iv.image = #imageLiteral(resourceName: "imageAddLarge").withTintColor(.darkGray)
-        iv.isUserInteractionEnabled = true
-        return iv
+    private var addImageButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        b.setImage(#imageLiteral(resourceName: "imageAddLarge"), for: .normal)
+        b.tintColor = .darkGray
+        b.addTarget(self, action:  #selector(addImageViewTapped), for: .touchUpInside)
+        return b
     }()
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = #colorLiteral(red: 0.04702279717, green: 0.04691094905, blue: 0.05519593507, alpha: 1)
         setupLayout()
         setupNavBar()
         getData()
-        addImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(addImageViewTapped)))
+    }
+    
+    private func createBitMapViewWith(_ givenImage: UIImage) {
+        addImageButton.removeFromSuperview()
+        collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .left)
+        let bitmapView = BitmapView(givenImage)
+        delegate = bitmapView
+        bitmapView.tag = 13
+        bitmapView.frame.size = givenImage.sizeForScreen
+        bitmapView.center = self.view.center
+        self.view.addSubview(bitmapView)
+    }
+    
+    private func removeBitmapView(){
+        delegate = nil
+        let bitmapView = view.subviews.filter({ $0.tag == 13 }).first
+        bitmapView?.removeFromSuperview()
     }
     
     private func setupNavBar() {
-        title = "Overlay"
+        title = "Lensflare"
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveTapped))
         }
@@ -51,7 +73,6 @@ final class ViewController: UIViewController {
         NetworkManager.shared.getData(type: [OverlayModel].self, .get, params: [:]) { result in
             switch result {
             case .success(let data):
-                print(data)
                 self.data.append(contentsOf: data)
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
@@ -100,21 +121,20 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         NetworkManager.shared.downloadImage(urlString: data[indexPath.item].overlayUrl) { (image, error) in
             DispatchQueue.main.async {
-            self.addImageView.image = image
+                self.delegate?.viewControllerDelegate(self, selected: image)
             }
         }
     }
 }
 
 extension ViewController {
-    func setupLayout() {
-        
-        view.addSubview(addImageView)
+    private func setupLayout() {
+        view.addSubview(addImageButton)
         NSLayoutConstraint.activate([
-            addImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            addImageView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.7),
-            addImageView.heightAnchor.constraint(equalTo: addImageView.widthAnchor),
-            addImageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -view.frame.width*0.2)
+            addImageButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            addImageButton.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.7),
+            addImageButton.heightAnchor.constraint(equalTo: addImageButton.widthAnchor),
+            addImageButton.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -view.frame.width*0.2)
         ])
         
         view.addSubview(collectionView)
@@ -157,9 +177,11 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let imageEdited = info[UIImagePickerController.InfoKey.editedImage] as? UIImage  {
-            self.addImageView.image = imageEdited
+            self.removeBitmapView()
+            self.createBitMapViewWith(imageEdited)
         }else if let imageEdited = info[UIImagePickerController.InfoKey.originalImage] as? UIImage  {
-            self.addImageView.image = imageEdited
+            self.removeBitmapView()
+            self.createBitMapViewWith(imageEdited)
         }
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Change", style: .plain, target: self, action: #selector(self.addImageViewTapped))
         

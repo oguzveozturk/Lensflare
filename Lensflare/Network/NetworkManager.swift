@@ -59,7 +59,7 @@ final class NetworkManager {
     let imageCache = NSCache<NSString, UIImage>()
     
     func downloadImage(urlString: String?, completion: @escaping (_ image: UIImage?, _ error: Error? ) -> Void) {
-        guard let urlString = urlString, let url = URL(string: urlString) else { return }
+        guard let urlString = urlString, let url = URL(string: urlString) else { completion(nil, LErrors.invalidURL); return }
         DispatchQueue.global().async {
             if let cachedImage = self.imageCache.object(forKey: url.absoluteString as NSString) {
                 completion(cachedImage, nil)
