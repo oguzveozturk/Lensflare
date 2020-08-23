@@ -19,12 +19,15 @@ final class BitmapView: UIView {
     private var overlayImageView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.contentMode = .scaleAspectFit
+        iv.isUserInteractionEnabled = true
         return iv
     }()
     
+    private lazy var histogram = HistogramDisplay()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
+        layer.masksToBounds = true
         setupLayout()
     }
     
@@ -32,9 +35,87 @@ final class BitmapView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit { print("bitMapView deinitialized") }
+    
     convenience init(_ givenImage: UIImage) {
         self.init()
         self.givenImageView.image = givenImage
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.histogram.imageRef = givenImageView.image?.cgImage
+    }
+    
+        //MARK: Add Gestures
+    
+    private func addRotateGesture(view: UIView) {
+        let rotate = UIRotationGestureRecognizer(target: self, action: #selector(handleRotate(_:)))
+        rotate.delegate = self
+        view.addGestureRecognizer(rotate)
+    }
+    
+    private func addPinchGesture(view: UIView) {
+        let pinch = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
+        pinch.delegate = self
+        view.addGestureRecognizer(pinch)
+    }
+    
+    private func addPanGesture(view: UIView) {
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        pan.delegate = self
+        view.addGestureRecognizer(pan)
+    }
+    
+        //MARK: Handle Gestures
+    
+    @objc func handlePinch(_ sender: UIPinchGestureRecognizer) {
+        let image = sender.view!
+        image.transform = image.transform.scaledBy(x: sender.scale, y: sender.scale)
+        sender.scale = 1
+    }
+    
+    @objc func handleRotate(_ sender: UIRotationGestureRecognizer) {
+        if sender.state == .began || sender.state == .changed {
+            sender.view?.transform = sender.view!.transform.rotated(by: sender.rotation)
+            sender.rotation = 0
+        }
+    }
+    
+    @objc func handlePan(_ sender: UIPanGestureRecognizer) {
+        let image = sender.view!
+        switch sender.state {
+        case .began:
+            print(sender.location(in: self))
+        case .changed:
+            moveViewWithPan(overlay: image, sender: sender)
+        case .ended,.cancelled:
+            print(sender.location(in: self))
+        default:
+            break
+        }
+    }
+    
+    private func moveViewWithPan(overlay: UIView, sender: UIPanGestureRecognizer) {
+        let translation = sender.translation(in: givenImageView)
+        overlay.center = CGPoint(x: overlay.center.x + translation.x, y: overlay.center.y + translation.y)
+        sender.setTranslation(.zero, in: overlay)
+    }
+    
+    func saveToLibrary(){
+        guard let savingImage = givenImageView.image else { return }
+        let frame = CGRect(x: 0, y: 0, width: savingImage.size.width, height: savingImage.size.height)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.preferredRange = .extended
+        let renderer = UIGraphicsImageRenderer(size: savingImage.size, format: format)
+        histogram.isHidden = true
+        let finalImage = renderer.image { ctx in
+            self.drawHierarchy(in: frame, afterScreenUpdates: true)
+            histogram.isHidden = false
+        }
+        
+        UIImageWriteToSavedPhotosAlbum(finalImage, nil, nil, nil)
     }
 }
 
@@ -48,17 +129,42 @@ extension BitmapView {
             givenImageView.heightAnchor.constraint(equalTo: heightAnchor)
         ])
         
+        addSubview(histogram)
+        NSLayoutConstraint.activate([
+            histogram.bottomAnchor.constraint(equalTo: bottomAnchor),
+            histogram.trailingAnchor.constraint(equalTo: trailingAnchor),
+            histogram.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.4),
+            histogram.heightAnchor.constraint(equalTo: histogram.widthAnchor, multiplier: 0.4)
+        ])
+        
         addSubview(overlayImageView)
         NSLayoutConstraint.activate([
             overlayImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
             overlayImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            overlayImageView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.6),
+            overlayImageView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.5),
             overlayImageView.heightAnchor.constraint(equalTo: overlayImageView.widthAnchor)
         ])
     }
 }
 extension BitmapView: ViewControllerDelegate {
-    func viewControllerDelegate(_ vc: ViewController, selected image: UIImage?) {
-            overlayImageView.image = image
+    func viewControllerDelegate(_ vc: ViewController) {
+        saveToLibrary()
+    }
+    
+    func viewControllerDelegate(_ vc: ViewController, selected imageURL: String?) {
+        addPanGesture(view: overlayImageView)
+        addPinchGesture(view: overlayImageView)
+        addRotateGesture(view: overlayImageView)
+        if let imageURL = imageURL {
+            overlayImageView.setImage(imageURL, isThumbNail: false)
+        } else {
+            overlayImageView.image = nil
+        }
+    }
+}
+
+extension BitmapView: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
 }

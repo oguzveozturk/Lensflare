@@ -8,14 +8,19 @@
 import UIKit
 
 protocol ViewControllerDelegate:class {
-    func viewControllerDelegate(_ vc: ViewController, selected image: UIImage?)
+    func viewControllerDelegate(_ vc: ViewController, selected imageURL: String?)
+    func viewControllerDelegate(_ vc: ViewController)
 }
 
 final class ViewController: UIViewController {
     
     weak var delegate: ViewControllerDelegate?
     
+    private var collectionHeightConstraint = NSLayoutConstraint()
+    
     private var data: [OverlayModel] = [OverlayModel(overlayId: 0, overlayName: "None", overlayPreviewIconUrl: nil, overlayUrl: nil)]
+    
+    private var thumbNails: [UIImage] = []
         
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -24,8 +29,11 @@ final class ViewController: UIViewController {
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.delegate = self
         cv.dataSource = self
+        cv.contentInset.left = 10
+        cv.contentInset.right = 10
+        cv.showsHorizontalScrollIndicator = false
         cv.backgroundColor = #colorLiteral(red: 0.1097619608, green: 0.1096628532, blue: 0.1179399118, alpha: 1)
-        cv.register(OverlayCell.self, forCellWithReuseIdentifier: OverlayCell.identifier)
+        cv.register(OverlayCell.self)
         return cv
     }()
     
@@ -37,7 +45,7 @@ final class ViewController: UIViewController {
         b.addTarget(self, action:  #selector(addImageViewTapped), for: .touchUpInside)
         return b
     }()
-        
+            
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = #colorLiteral(red: 0.04702279717, green: 0.04691094905, blue: 0.05519593507, alpha: 1)
@@ -46,14 +54,22 @@ final class ViewController: UIViewController {
         getData()
     }
     
+    private func showCollectionView() {
+        collectionHeightConstraint.constant = view.frame.width*0.3
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: { [weak self] in
+            self?.view.layoutIfNeeded()
+        }, completion: nil)
+    }
+    
     private func createBitMapViewWith(_ givenImage: UIImage) {
         addImageButton.removeFromSuperview()
         collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .left)
         let bitmapView = BitmapView(givenImage)
         delegate = bitmapView
         bitmapView.tag = 13
-        bitmapView.frame.size = givenImage.sizeForScreen
-        bitmapView.center = self.view.center
+        let safeAreaHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top
+        bitmapView.frame.size = givenImage.fittingSizeForGiven(height: safeAreaHeight*0.7)
+        bitmapView.center = CGPoint(x: view.center.x, y: view.center.y)
         self.view.addSubview(bitmapView)
     }
     
@@ -69,14 +85,27 @@ final class ViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveTapped))
         }
     
+    private func cacheWithImageIO(_ url: NSURL) -> UIImage? {
+        guard let imageSource = CGImageSourceCreateWithURL(url, nil) else { return nil }
+        
+        let options: [NSString:Any] = [kCGImageSourceShouldCacheImmediately: true]
+        let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, options as CFDictionary)! as NSDictionary
+        guard let cachedImage = CGImageSourceCreateImageAtIndex(imageSource, 0, options as CFDictionary),
+        let oriantation = imageProperties[kCGImagePropertyOrientation as String] as? Int else { return nil }
+
+        let image = UIImage(cgImage: cachedImage, scale: 1, orientation: UIImage.Orientation(oriantation))
+        
+        return image
+    }
+    
     private func getData() {
         NetworkManager.shared.getData(type: [OverlayModel].self, .get, params: [:]) { result in
             switch result {
             case .success(let data):
                 self.data.append(contentsOf: data)
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
-                    self.collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .left)
+                DispatchQueue.main.async { [weak self] in
+                    self?.collectionView.reloadData()
+                    self?.collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .left)
                 }
                 
             case .failure(let error):
@@ -86,7 +115,8 @@ final class ViewController: UIViewController {
     }
     
     @objc private func saveTapped() {
-        print("saved")
+        delegate?.viewControllerDelegate(self)
+        alert(title: "Saved!", message: "Photo successfully saved your libraries")
     }
     
     @objc private func addImageViewTapped() {
@@ -94,36 +124,31 @@ final class ViewController: UIViewController {
     }
 }
 
-extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ReusableView {
+    static var defaultReuseIdentifier: String {
+        return "OverlayCell"
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return data.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: OverlayCell.identifier, for: indexPath) as? OverlayCell else { return UICollectionViewCell() }
-        cell.index = indexPath.item
+        let cell: OverlayCell = collectionView.dequeueReusableCell(for: indexPath)
         cell.cellData = data[indexPath.item]
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width*0.18, height: collectionView.frame.width*0.18)
+        return CGSize(width: collectionView.frame.width*0.18, height: collectionView.frame.height*0.9)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return view.frame.width*0.05
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: view.frame.width*0.05, bottom: 0, right: view.frame.width*0.05)
+        return 5
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        NetworkManager.shared.downloadImage(urlString: data[indexPath.item].overlayUrl) { (image, error) in
-            DispatchQueue.main.async {
-                self.delegate?.viewControllerDelegate(self, selected: image)
-            }
-        }
+        delegate?.viewControllerDelegate(self, selected: data[indexPath.item].overlayUrl)
     }
 }
 
@@ -137,13 +162,13 @@ extension ViewController {
             addImageButton.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -view.frame.width*0.2)
         ])
         
+        collectionHeightConstraint = collectionView.heightAnchor.constraint(equalToConstant: 0)
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            collectionView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.21)
-            
+            collectionHeightConstraint
         ])
     }
 }
@@ -169,22 +194,25 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
             picker.sourceType = sourceType
             picker.allowsEditing = true
             picker.delegate = self
-            picker.navigationItem.rightBarButtonItem?.title = "Geri"
             return picker
         }()
         present(imagePicker, animated: true, completion: nil)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let imageEdited = info[UIImagePickerController.InfoKey.editedImage] as? UIImage  {
-            self.removeBitmapView()
-            self.createBitMapViewWith(imageEdited)
-        }else if let imageEdited = info[UIImagePickerController.InfoKey.originalImage] as? UIImage  {
-            self.removeBitmapView()
-            self.createBitMapViewWith(imageEdited)
-        }
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Change", style: .plain, target: self, action: #selector(self.addImageViewTapped))
         
-        dismiss(animated: true, completion: nil)
+        if let imgUrl = info[UIImagePickerController.InfoKey.imageURL] as? NSURL{
+            self.removeBitmapView()
+            let image = cacheWithImageIO(imgUrl) ?? UIImage()
+            self.createBitMapViewWith(image)
+        }
+        
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Change", style: .plain, target: self, action: #selector(self.addImageViewTapped))
+        dismiss(animated: true) {
+            if self.collectionHeightConstraint.constant == 0 {
+                self.showCollectionView()
+            }
+        }
     }
 }
+

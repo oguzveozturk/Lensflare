@@ -56,5 +56,11 @@
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Dark</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Permisson needed</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Permission needed</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Permisson needed</string>
 </dict>
 </plist>

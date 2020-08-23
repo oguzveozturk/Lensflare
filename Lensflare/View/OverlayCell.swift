@@ -7,24 +7,13 @@
 
 import UIKit
 
-final class OverlayCell: UICollectionViewCell {
+final class OverlayCell: UICollectionViewCell, ReusableView {
     static let identifier = "OverlayCell"
-    
-    var index = 0
-    
-    var cellData: OverlayModel? {
+        
+    var cellData: OverlayModel! {
         didSet {
-            if let url = cellData?.overlayPreviewIconUrl {
-                NetworkManager.shared.downloadImage(urlString: url) { (image, error) in
-                    DispatchQueue.main.async {
-                        self.overlayThumb.image = image
-                    }
-                }
-                titleLabel.text = cellData?.overlayName
-            } else {
-                overlayThumb.image = #imageLiteral(resourceName: "forbidden").withTintColor(.systemGray5)
-                titleLabel.text = "None"
-            }
+            overlayThumb.setImage(cellData.overlayPreviewIconUrl,isThumbNail: true)
+            titleLabel.text = cellData?.overlayName
         }
     }
     
@@ -43,8 +32,9 @@ final class OverlayCell: UICollectionViewCell {
         let l = UILabel()
         l.translatesAutoresizingMaskIntoConstraints = false
         l.font = .systemFont(ofSize: 12, weight: .regular)
-        l.textColor = .systemGray5
+        l.textColor = .white
         l.textAlignment = .center
+        l.adjustsFontSizeToFitWidth = true
         return l
     }()
     
@@ -59,7 +49,13 @@ final class OverlayCell: UICollectionViewCell {
     
     override var isSelected: Bool {
         didSet {
-            isSelected ? (overlayThumb.layer.borderWidth = 2) : (overlayThumb.layer.borderWidth = 0)
+            if isSelected {
+                titleLabel.textColor = #colorLiteral(red: 0.1407748461, green: 0.4721385837, blue: 0.7627988458, alpha: 1)
+                overlayThumb.layer.borderWidth = 2
+            } else {
+                titleLabel.textColor = .white
+                overlayThumb.layer.borderWidth = 0
+            }
         }
     }
     
@@ -68,7 +64,7 @@ final class OverlayCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             overlayThumb.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             overlayThumb.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: -10),
-            overlayThumb.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.7),
+            overlayThumb.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
             overlayThumb.heightAnchor.constraint(equalTo: overlayThumb.widthAnchor)
         ])
         
@@ -76,8 +72,10 @@ final class OverlayCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             titleLabel.topAnchor.constraint(equalTo: overlayThumb.bottomAnchor, constant: 5),
-            titleLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
+            titleLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.85),
             titleLabel.heightAnchor.constraint(equalToConstant: 15)
         ])
     }
 }
+
+

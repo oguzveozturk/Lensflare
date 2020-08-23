@@ -9,6 +9,7 @@ import UIKit
 class AlertService {
     static func showAlert(style: UIAlertController.Style, title: String?, message: String?, actions: [UIAlertAction] = [UIAlertAction(title: "Ok", style: .cancel, handler: nil)], completion: (() -> Swift.Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: style)
+        alert.pruneNegativeWidthConstraints()
         for action in actions {
             alert.addAction(action)
         }
@@ -35,5 +36,15 @@ extension UIApplication {
             return getTopMostViewController(base: presented)
         }
         return base
+    }
+}
+
+extension UIAlertController {
+    func pruneNegativeWidthConstraints() {
+        for subView in self.view.subviews {
+            for constraint in subView.constraints where constraint.debugDescription.contains("width == - 16") {
+                subView.removeConstraint(constraint)
+            }
+        }
     }
 }

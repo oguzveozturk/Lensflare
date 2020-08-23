@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		93CEE7CE24F19C5D001DC401 /* UIImageExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7CD24F19C5D001DC401 /* UIImageExt.swift */; };
+		93CEE7D024F1AB75001DC401 /* HistogramDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7CF24F1AB75001DC401 /* HistogramDisplay.swift */; };
+		93CEE7D224F29020001DC401 /* UIImageViewExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7D124F29020001DC401 /* UIImageViewExt.swift */; };
+		93CEE7D424F29082001DC401 /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7D324F29082001DC401 /* HTTPMethod.swift */; };
+		93CEE7D624F2AE3A001DC401 /* UIImage+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7D524F2AE3A001DC401 /* UIImage+Orientation.swift */; };
+		93CEE7D824F2B2A4001DC401 /* UICollectionView+Register.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7D724F2B2A4001DC401 /* UICollectionView+Register.swift */; };
 		93EC3F0C24F03D4E00865151 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F0B24F03D4E00865151 /* AppDelegate.swift */; };
 		93EC3F0E24F03D4E00865151 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F0D24F03D4E00865151 /* SceneDelegate.swift */; };
 		93EC3F1024F03D4E00865151 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F0F24F03D4E00865151 /* ViewController.swift */; };
@@ -26,6 +31,11 @@
 
 /* Begin PBXFileReference section */
 		93CEE7CD24F19C5D001DC401 /* UIImageExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExt.swift; sourceTree = "<group>"; };
+		93CEE7CF24F1AB75001DC401 /* HistogramDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistogramDisplay.swift; sourceTree = "<group>"; };
+		93CEE7D124F29020001DC401 /* UIImageViewExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewExt.swift; sourceTree = "<group>"; };
+		93CEE7D324F29082001DC401 /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
+		93CEE7D524F2AE3A001DC401 /* UIImage+Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Orientation.swift"; sourceTree = "<group>"; };
+		93CEE7D724F2B2A4001DC401 /* UICollectionView+Register.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Register.swift"; sourceTree = "<group>"; };
 		93EC3F0824F03D4E00865151 /* Lensflare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lensflare.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93EC3F0B24F03D4E00865151 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		93EC3F0D24F03D4E00865151 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -93,6 +103,7 @@
 				93EC3F2424F03F6900865151 /* NetworkManager.swift */,
 				93EC3F2824F046E400865151 /* OverlayModel.swift */,
 				93EC3F2624F03FE400865151 /* LErrors.swift */,
+				93CEE7D324F29082001DC401 /* HTTPMethod.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -112,6 +123,7 @@
 				93EC3F1924F03D5300865151 /* LaunchScreen.storyboard */,
 				93EC3F3124F04D6400865151 /* OverlayCell.swift */,
 				93EC3F3324F067FB00865151 /* BitmapView.swift */,
+				93CEE7CF24F1AB75001DC401 /* HistogramDisplay.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -138,6 +150,9 @@
 			children = (
 				93EC3F3B24F0735000865151 /* UIViewController.swift */,
 				93CEE7CD24F19C5D001DC401 /* UIImageExt.swift */,
+				93CEE7D124F29020001DC401 /* UIImageViewExt.swift */,
+				93CEE7D524F2AE3A001DC401 /* UIImage+Orientation.swift */,
+				93CEE7D724F2B2A4001DC401 /* UICollectionView+Register.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -220,15 +235,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93CEE7D224F29020001DC401 /* UIImageViewExt.swift in Sources */,
 				93EC3F3A24F06CF700865151 /* AlertService.swift in Sources */,
+				93CEE7D824F2B2A4001DC401 /* UICollectionView+Register.swift in Sources */,
 				93EC3F1024F03D4E00865151 /* ViewController.swift in Sources */,
 				93EC3F0C24F03D4E00865151 /* AppDelegate.swift in Sources */,
 				93EC3F3C24F0735000865151 /* UIViewController.swift in Sources */,
 				93EC3F2524F03F6900865151 /* NetworkManager.swift in Sources */,
 				93CEE7CE24F19C5D001DC401 /* UIImageExt.swift in Sources */,
 				93EC3F1624F03D4E00865151 /* Lensflare.xcdatamodeld in Sources */,
+				93CEE7D424F29082001DC401 /* HTTPMethod.swift in Sources */,
 				93EC3F0E24F03D4E00865151 /* SceneDelegate.swift in Sources */,
+				93CEE7D024F1AB75001DC401 /* HistogramDisplay.swift in Sources */,
 				93EC3F2924F046E400865151 /* OverlayModel.swift in Sources */,
+				93CEE7D624F2AE3A001DC401 /* UIImage+Orientation.swift in Sources */,
 				93EC3F3224F04D6400865151 /* OverlayCell.swift in Sources */,
 				93EC3F3424F067FB00865151 /* BitmapView.swift in Sources */,
 				93EC3F2724F03FE400865151 /* LErrors.swift in Sources */,

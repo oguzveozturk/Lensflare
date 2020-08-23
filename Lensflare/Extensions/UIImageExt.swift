@@ -8,18 +8,17 @@
 import UIKit
 
 extension UIImage {
-    var sizeForScreen: CGSize {
+    func fittingSizeForGiven(height:CGFloat) -> CGSize {
         let screen = UIScreen.main.bounds
         let imageRatio = self.size.height / self.size.width
         
-        if imageRatio > screen.height/screen.width {
-            let width = (1/imageRatio) * screen.height
-            return CGSize(width: width, height: screen.height)
+        if imageRatio > height/screen.width {
+            let neededWidth = (1/imageRatio) * height
+            return CGSize(width: neededWidth, height: height)
 
         } else {
-            let height = imageRatio * screen.width
-            return CGSize(width: screen.width, height: height)
-
+            let neededHeight = imageRatio * screen.width
+            return CGSize(width: screen.width, height: neededHeight)
         }
     }
 }
