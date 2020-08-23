@@ -8,14 +8,13 @@
 import UIKit
 
 final class OverlayCell: UICollectionViewCell, ReusableView {
-    static let identifier = "OverlayCell"
-        
-    var cellData: OverlayModel! {
-        didSet {
-            overlayThumb.setImage(cellData.overlayPreviewIconUrl,isThumbNail: true)
-            titleLabel.text = cellData?.overlayName
-        }
+    
+    struct ViewModel {
+        let overlayPreviewIconUrl: String?
+        let overlayName: String?
     }
+    
+    static let identifier = "OverlayCell"
     
    private var overlayThumb: UIImageView = {
         let iv = UIImageView()
@@ -57,6 +56,11 @@ final class OverlayCell: UICollectionViewCell, ReusableView {
                 overlayThumb.layer.borderWidth = 0
             }
         }
+    }
+    
+    func set(_ viewModel: ViewModel) {
+        overlayThumb.setImage(viewModel.overlayPreviewIconUrl,isThumbNail: true)
+        titleLabel.text = viewModel.overlayName
     }
     
     private func setupLayout() {

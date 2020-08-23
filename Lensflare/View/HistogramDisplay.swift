@@ -20,9 +20,15 @@
 import UIKit
 import Accelerate.vImage
 
+protocol HistogramGraph: class {
+    var imageRef: CGImage? { get set }
+}
+
+typealias HistogramGraphView = HistogramGraph & UIView
+
 /// HistogramDisplay displays the RGB histogram of a given CGImage
 /// The vertical scale can be changed with touch movement.
-class HistogramDisplay: UIView {
+class HistogramDisplay: UIView, HistogramGraph {
     var format = vImage_CGImageFormat(
         bitsPerComponent: 8,
         bitsPerPixel: 32,

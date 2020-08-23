@@ -10,4 +10,8 @@ struct OverlayDTO: Decodable {
     let overlayName:String?
     let overlayPreviewIconUrl: String?
     let overlayUrl: String?
+    
+    var overlayCellViewModel: OverlayCell.ViewModel {
+        .init(overlayPreviewIconUrl: overlayPreviewIconUrl, overlayName: overlayName)
+    }
 }

@@ -58,41 +58,24 @@ final class NetworkManager {
     }
     
    private let imageCache = NSCache<NSString, UIImage>()
-    
-    func downloadImage(urlString: String?,isThumbNail: Bool, completion: @escaping (_ image: UIImage, _ error: Error?) -> Void) {
-        guard let urlString = urlString, let url = URL(string: urlString) else { completion(#imageLiteral(resourceName: "forbidden").withTintColor(.white), LErrors.invalidURL); return }
+    func downloadImage(urlString: String?, isThumbNail: Bool,defaultImage: UIImage, completion: @escaping (_ image: UIImage, _ error: Error?) -> Void) {
+        guard let urlString = urlString,
+            let url = NSURL(string: urlString) else {
+                completion(defaultImage, LErrors.invalidURL)
+                return
+        }
+        
         DispatchQueue.global().async {
-            if let cachedImage = self.imageCache.object(forKey: url.absoluteString as NSString) {
+            if let cachedImage = self.imageCache.object(forKey: url.absoluteString! as NSString) {
                 completion(cachedImage, nil)
             } else {
-                if let image = self.downsample(imageAt: url, isThumbNail: isThumbNail ) {
-                    self.imageCache.setObject(image, forKey: url.absoluteString as NSString)
+                if let image = LFImageIO(url).downsample(isThumbNail: isThumbNail) {
+                    self.imageCache.setObject(image, forKey: url.absoluteString! as NSString)
                     completion(image, nil)
                 } else {
-                    completion(#imageLiteral(resourceName: "forbidden").withTintColor(.white), LErrors.invalidData)
+                    completion(defaultImage, LErrors.invalidData)
                 }
             }
-        }
-    }
-    
-    
-    private func downsample(imageAt imageURL: URL,isThumbNail:Bool) -> UIImage? {
-        let imageSourceOptions = [kCGImageSourceShouldCache: !isThumbNail] as CFDictionary
-        guard let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions) else { return nil }
-        if isThumbNail {
-            let downsampledOptions = [kCGImageSourceCreateThumbnailFromImageAlways: true,
-                                      kCGImageSourceShouldCacheImmediately: true,
-                                      kCGImageSourceCreateThumbnailWithTransform: true,
-                                      kCGImageSourceThumbnailMaxPixelSize: 100] as CFDictionary
-            
-            let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampledOptions)!
-            
-            return UIImage(cgImage: downsampledImage)
-        } else {
-                let options: [NSString:Any] = [kCGImageSourceShouldCacheImmediately: true]
-                
-                guard let cachedImage = CGImageSourceCreateImageAtIndex(imageSource, 0, options as CFDictionary) else { return nil }
-                return UIImage(cgImage: cachedImage)
         }
     }
 }

@@ -8,6 +8,8 @@
 import UIKit
 
 final class BitmapView: UIView {
+    
+    private var isImageSetted = true
         
     private var givenImageView: UIImageView = {
         let iv = UIImageView()
@@ -23,10 +25,11 @@ final class BitmapView: UIView {
         return iv
     }()
     
-    private lazy var histogram = HistogramDisplay()
+    private let histogram: HistogramGraphView
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(histogram: HistogramGraphView = HistogramDisplay()) {
+        self.histogram = histogram
+        super.init(frame: .zero)
         layer.masksToBounds = true
         setupLayout()
     }
@@ -146,15 +149,19 @@ extension BitmapView {
         ])
     }
 }
-extension BitmapView: ViewControllerDelegate {
-    func viewControllerDelegate(_ vc: ViewController) {
+extension BitmapView: ImageProcessorView {
+    func save() {
         saveToLibrary()
     }
     
-    func viewControllerDelegate(_ vc: ViewController, selected imageURL: String?) {
-        addPanGesture(view: overlayImageView)
-        addPinchGesture(view: overlayImageView)
-        addRotateGesture(view: overlayImageView)
+    func process(_ imageURL: String?) {
+        if isImageSetted {
+            isImageSetted = !isImageSetted
+            addPanGesture(view: overlayImageView)
+            addPinchGesture(view: overlayImageView)
+            addRotateGesture(view: overlayImageView)
+        }
+
         if let imageURL = imageURL {
             overlayImageView.setImage(imageURL, isThumbNail: false)
         } else {

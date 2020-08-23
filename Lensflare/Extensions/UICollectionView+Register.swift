@@ -17,20 +17,15 @@ extension ReusableView where Self: UIView {
     }
 }
 
-//Confirming Collection View and TableView for Registering and Dequeing
 extension UICollectionView {
     func register<T: UICollectionViewCell>(_: T.Type) where T: ReusableView {
         register(T.self, forCellWithReuseIdentifier: T.defaultReuseIdentifier)
     }
-    
-    //Registering Supplementary View
-    
+        
     func register<T: UICollectionReusableView>(_: T.Type, supplementaryViewOfKind: String) where T: ReusableView {
         register(T.self, forSupplementaryViewOfKind: supplementaryViewOfKind, withReuseIdentifier: T.defaultReuseIdentifier)
     }
-    
-    //Dequeing
-    
+        
     func dequeueReusableCell<T: UICollectionViewCell>(for indexPath: IndexPath) -> T where T: ReusableView {
         guard let cell = dequeueReusableCell(withReuseIdentifier: T.defaultReuseIdentifier, for: indexPath) as? T else {
             fatalError("Could not dequeue cell with identifier: \(T.defaultReuseIdentifier)")

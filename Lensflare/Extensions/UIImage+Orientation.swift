@@ -13,7 +13,7 @@ extension UIImage.Orientation {
             case 6: self = .right
             case 1: self = .up
             case 8: self = .left
-            case 3: self = .up
+            case 3: self = .down
         default:
             self = .up
         }

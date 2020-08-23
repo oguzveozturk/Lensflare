@@ -7,21 +7,13 @@
 
 import UIKit
 
-protocol ViewControllerDelegate:class {
-    func viewControllerDelegate(_ vc: ViewController, selected imageURL: String?)
-    func viewControllerDelegate(_ vc: ViewController)
-}
-
 final class ViewController: UIViewController {
     
-    weak var delegate: ViewControllerDelegate?
-    
+    private var viewModel: ViewModel!
+    private var imageProcessorView: ImageProcessorView?
+
     private var collectionHeightConstraint = NSLayoutConstraint()
     
-    private var data: [OverlayModel] = [OverlayModel(overlayId: 0, overlayName: "None", overlayPreviewIconUrl: nil, overlayUrl: nil)]
-    
-    private var thumbNails: [UIImage] = []
-        
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -45,6 +37,11 @@ final class ViewController: UIViewController {
         b.addTarget(self, action:  #selector(addImageViewTapped), for: .touchUpInside)
         return b
     }()
+    
+    convenience init(_ viewModel: ViewModel) {
+        self.init()
+        self.viewModel = viewModel
+    }
             
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,6 +49,17 @@ final class ViewController: UIViewController {
         setupLayout()
         setupNavBar()
         getData()
+    }
+    
+    private func getData() {
+        viewModel.fetchData { (succes) in
+            if succes {
+                DispatchQueue.main.async { [weak self] in
+                    self?.collectionView.reloadData()
+                    self?.collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .left)
+                }
+            }
+        }
     }
     
     private func showCollectionView() {
@@ -62,21 +70,11 @@ final class ViewController: UIViewController {
     }
     
     private func createBitMapViewWith(_ givenImage: UIImage) {
-        addImageButton.removeFromSuperview()
-        collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .left)
-        let bitmapView = BitmapView(givenImage)
-        delegate = bitmapView
-        bitmapView.tag = 13
+        imageProcessorView = BitmapView(givenImage)
         let safeAreaHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top
-        bitmapView.frame.size = givenImage.fittingSizeForGiven(height: safeAreaHeight*0.7)
-        bitmapView.center = CGPoint(x: view.center.x, y: view.center.y)
-        self.view.addSubview(bitmapView)
-    }
-    
-    private func removeBitmapView(){
-        delegate = nil
-        let bitmapView = view.subviews.filter({ $0.tag == 13 }).first
-        bitmapView?.removeFromSuperview()
+        imageProcessorView?.frame.size = givenImage.fittingSizeForGiven(height: safeAreaHeight*0.7)
+        imageProcessorView?.center = CGPoint(x: view.center.x, y: view.center.y*0.9)
+        self.view.addSubview(imageProcessorView!)
     }
     
     private func setupNavBar() {
@@ -98,24 +96,8 @@ final class ViewController: UIViewController {
         return image
     }
     
-    private func getData() {
-        NetworkManager.shared.getData(type: [OverlayModel].self, .get, params: [:]) { result in
-            switch result {
-            case .success(let data):
-                self.data.append(contentsOf: data)
-                DispatchQueue.main.async { [weak self] in
-                    self?.collectionView.reloadData()
-                    self?.collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .left)
-                }
-                
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
-    
     @objc private func saveTapped() {
-        delegate?.viewControllerDelegate(self)
+        imageProcessorView?.save()
         alert(title: "Saved!", message: "Photo successfully saved your libraries")
     }
     
@@ -126,16 +108,16 @@ final class ViewController: UIViewController {
 
 extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ReusableView {
     static var defaultReuseIdentifier: String {
-        return "OverlayCell"
+        return OverlayCell.identifier
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return data.count
+        return viewModel.data.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: OverlayCell = collectionView.dequeueReusableCell(for: indexPath)
-        cell.cellData = data[indexPath.item]
+        cell.set(viewModel.data[indexPath.item].overlayCellViewModel)
         return cell
     }
     
@@ -148,7 +130,8 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        delegate?.viewControllerDelegate(self, selected: data[indexPath.item].overlayUrl)
+        let overlayUrl = viewModel.data[indexPath.item].overlayUrl
+        imageProcessorView?.process(overlayUrl)
     }
 }
 
@@ -202,16 +185,17 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let imgUrl = info[UIImagePickerController.InfoKey.imageURL] as? NSURL{
-            self.removeBitmapView()
-            let image = cacheWithImageIO(imgUrl) ?? UIImage()
+            self.imageProcessorView?.removeFromSuperview()
+            let imageIO = LFImageIO(imgUrl)
+            let image = imageIO.cachedImage() ?? UIImage()
+            addImageButton.removeFromSuperview()
+            collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .left)
             self.createBitMapViewWith(image)
         }
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Change", style: .plain, target: self, action: #selector(self.addImageViewTapped))
         dismiss(animated: true) {
-            if self.collectionHeightConstraint.constant == 0 {
-                self.showCollectionView()
-            }
+            self.collectionHeightConstraint.constant == 0 ? self.showCollectionView() : nil
         }
     }
 }
