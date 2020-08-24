@@ -50,6 +50,22 @@ final class BitmapView: UIView {
         self.histogram.imageRef = givenImageView.image?.cgImage
     }
     
+    func saveToLibrary(){
+        guard let savingImage = givenImageView.image else { return }
+        let frame = CGRect(x: 0, y: 0, width: savingImage.size.width, height: savingImage.size.height)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.preferredRange = .extended
+        let renderer = UIGraphicsImageRenderer(size: savingImage.size, format: format)
+        histogram.isHidden = true
+        let finalImage = renderer.image { ctx in
+            self.drawHierarchy(in: frame, afterScreenUpdates: true)
+            histogram.isHidden = false
+        }
+        
+        UIImageWriteToSavedPhotosAlbum(finalImage, nil, nil, nil)
+    }
+    
         //MARK: Add Gestures
     
     private func addRotateGesture(view: UIView) {
@@ -104,24 +120,8 @@ final class BitmapView: UIView {
         overlay.center = CGPoint(x: overlay.center.x + translation.x, y: overlay.center.y + translation.y)
         sender.setTranslation(.zero, in: overlay)
     }
-    
-    func saveToLibrary(){
-        guard let savingImage = givenImageView.image else { return }
-        let frame = CGRect(x: 0, y: 0, width: savingImage.size.width, height: savingImage.size.height)
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = 1
-        format.preferredRange = .extended
-        let renderer = UIGraphicsImageRenderer(size: savingImage.size, format: format)
-        histogram.isHidden = true
-        let finalImage = renderer.image { ctx in
-            self.drawHierarchy(in: frame, afterScreenUpdates: true)
-            histogram.isHidden = false
-        }
-        
-        UIImageWriteToSavedPhotosAlbum(finalImage, nil, nil, nil)
-    }
 }
-
+    //MARK: Setup Layouts
 extension BitmapView {
     private func setupLayout() {
         addSubview(givenImageView)
@@ -149,6 +149,7 @@ extension BitmapView {
         ])
     }
 }
+    //MARK: ImageProcessorView Protocol
 extension BitmapView: ImageProcessorView {
     func save() {
         saveToLibrary()
@@ -169,7 +170,7 @@ extension BitmapView: ImageProcessorView {
         }
     }
 }
-
+    //MARK: UIGestureRecognizerDelegate Method
 extension BitmapView: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true

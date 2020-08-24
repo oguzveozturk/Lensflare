@@ -39,6 +39,7 @@ final class OverlayCell: UICollectionViewCell, ReusableView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         setupLayout()
     }
     

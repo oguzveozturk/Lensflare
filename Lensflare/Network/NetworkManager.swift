@@ -30,6 +30,11 @@ final class NetworkManager {
         request.httpMethod = httpMethod.rawValue
         print("url",request)
         
+        if !Reachability.isConnectedToNetwork() {
+            completed(.failure(.connectionError))
+            return
+        }
+        
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let _ = error {
                 completed(.failure(.unableToComplete))
@@ -65,7 +70,7 @@ final class NetworkManager {
                 return
         }
         
-        DispatchQueue.global().async {
+        DispatchQueue.main.async {
             if let cachedImage = self.imageCache.object(forKey: url.absoluteString! as NSString) {
                 completion(cachedImage, nil)
             } else {
@@ -76,7 +81,7 @@ final class NetworkManager {
                     completion(defaultImage, LErrors.invalidData)
                 }
             }
-        }
+       }
     }
 }
 

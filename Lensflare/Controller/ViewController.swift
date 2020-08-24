@@ -52,7 +52,7 @@ final class ViewController: UIViewController {
     }
     
     private func getData() {
-        viewModel.fetchData { (succes) in
+        viewModel.fetchDataFromNetwork { (succes) in
             if succes {
                 DispatchQueue.main.async { [weak self] in
                     self?.collectionView.reloadData()
@@ -69,6 +69,12 @@ final class ViewController: UIViewController {
         }, completion: nil)
     }
     
+    private func cleanUpScreen() {
+        imageProcessorView?.removeFromSuperview()
+        addImageButton.removeFromSuperview()
+        collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .left)
+    }
+    
     private func createBitMapViewWith(_ givenImage: UIImage) {
         imageProcessorView = BitmapView(givenImage)
         let safeAreaHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top
@@ -83,19 +89,6 @@ final class ViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveTapped))
         }
     
-    private func cacheWithImageIO(_ url: NSURL) -> UIImage? {
-        guard let imageSource = CGImageSourceCreateWithURL(url, nil) else { return nil }
-        
-        let options: [NSString:Any] = [kCGImageSourceShouldCacheImmediately: true]
-        let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, options as CFDictionary)! as NSDictionary
-        guard let cachedImage = CGImageSourceCreateImageAtIndex(imageSource, 0, options as CFDictionary),
-        let oriantation = imageProperties[kCGImagePropertyOrientation as String] as? Int else { return nil }
-
-        let image = UIImage(cgImage: cachedImage, scale: 1, orientation: UIImage.Orientation(oriantation))
-        
-        return image
-    }
-    
     @objc private func saveTapped() {
         imageProcessorView?.save()
         alert(title: "Saved!", message: "Photo successfully saved your libraries")
@@ -105,7 +98,7 @@ final class ViewController: UIViewController {
         showPickerAlert()
     }
 }
-
+    //MARK: UICollectionView Delegate Methods
 extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ReusableView {
     static var defaultReuseIdentifier: String {
         return OverlayCell.identifier
@@ -134,7 +127,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
         imageProcessorView?.process(overlayUrl)
     }
 }
-
+    //MARK: Setup Layout
 extension ViewController {
     private func setupLayout() {
         view.addSubview(addImageButton)
@@ -156,7 +149,7 @@ extension ViewController {
     }
 }
 
-//MARK: - UIIMagePickerControllerDelegate Methods
+    //MARK: UIIMagePickerControllerDelegate Methods
 extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func showPickerAlert() {
@@ -184,12 +177,12 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
-        if let imgUrl = info[UIImagePickerController.InfoKey.imageURL] as? NSURL{
-            self.imageProcessorView?.removeFromSuperview()
-            let imageIO = LFImageIO(imgUrl)
-            let image = imageIO.cachedImage() ?? UIImage()
-            addImageButton.removeFromSuperview()
-            collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .left)
+        if let imgUrl = info[UIImagePickerController.InfoKey.imageURL] as? NSURL,
+            let image = LFImageIO(imgUrl).cachedImage() {
+            self.cleanUpScreen()
+            self.createBitMapViewWith(image)
+        } else if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            self.cleanUpScreen()
             self.createBitMapViewWith(image)
         }
         

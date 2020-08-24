@@ -17,6 +17,10 @@
 		93CEE7E324F2C28B001DC401 /* LFImageIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7E224F2C28B001DC401 /* LFImageIO.swift */; };
 		93CEE7E624F2CC97001DC401 /* ImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7E524F2CC97001DC401 /* ImageProcessor.swift */; };
 		93CEE7E824F30392001DC401 /* AppContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7E724F30392001DC401 /* AppContainer.swift */; };
+		93CEE7F124F310FE001DC401 /* PersistantManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7F024F310FE001DC401 /* PersistantManager.swift */; };
+		93CEE7FD24F33946001DC401 /* OverlayEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7FB24F33946001DC401 /* OverlayEntity+CoreDataClass.swift */; };
+		93CEE7FE24F33946001DC401 /* OverlayEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7FC24F33946001DC401 /* OverlayEntity+CoreDataProperties.swift */; };
+		93CEE80024F34798001DC401 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CEE7FF24F34798001DC401 /* Reachability.swift */; };
 		93EC3F0C24F03D4E00865151 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F0B24F03D4E00865151 /* AppDelegate.swift */; };
 		93EC3F0E24F03D4E00865151 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F0D24F03D4E00865151 /* SceneDelegate.swift */; };
 		93EC3F1024F03D4E00865151 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EC3F0F24F03D4E00865151 /* ViewController.swift */; };
@@ -44,6 +48,10 @@
 		93CEE7E224F2C28B001DC401 /* LFImageIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LFImageIO.swift; sourceTree = "<group>"; };
 		93CEE7E524F2CC97001DC401 /* ImageProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProcessor.swift; sourceTree = "<group>"; };
 		93CEE7E724F30392001DC401 /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
+		93CEE7F024F310FE001DC401 /* PersistantManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistantManager.swift; sourceTree = "<group>"; };
+		93CEE7FB24F33946001DC401 /* OverlayEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OverlayEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
+		93CEE7FC24F33946001DC401 /* OverlayEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OverlayEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		93CEE7FF24F34798001DC401 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		93EC3F0824F03D4E00865151 /* Lensflare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lensflare.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93EC3F0B24F03D4E00865151 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		93EC3F0D24F03D4E00865151 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -97,6 +105,16 @@
 			path = Cell;
 			sourceTree = "<group>";
 		};
+		93CEE7EB24F310BB001DC401 /* PersistantManager */ = {
+			isa = PBXGroup;
+			children = (
+				93CEE7F024F310FE001DC401 /* PersistantManager.swift */,
+				93CEE7FB24F33946001DC401 /* OverlayEntity+CoreDataClass.swift */,
+				93CEE7FC24F33946001DC401 /* OverlayEntity+CoreDataProperties.swift */,
+			);
+			path = PersistantManager;
+			sourceTree = "<group>";
+		};
 		93EC3EFF24F03D4E00865151 = {
 			isa = PBXGroup;
 			children = (
@@ -117,15 +135,16 @@
 		93EC3F0A24F03D4E00865151 /* Lensflare */ = {
 			isa = PBXGroup;
 			children = (
+				93CEE7EB24F310BB001DC401 /* PersistantManager */,
 				93CEE7E424F2CC7C001DC401 /* Image */,
-				93EC3F3824F06CE700865151 /* Helpers */,
-				93EC3F3524F06A6400865151 /* Extensions */,
 				93EC3F2A24F0472F00865151 /* Network */,
 				93EC3F3024F0478800865151 /* Controller */,
 				93CEE7DB24F2BCBF001DC401 /* ViewModel */,
 				93EC3F2E24F0476F00865151 /* View */,
 				93CEE7E924F304D4001DC401 /* Cell */,
 				93EC3F2D24F0475B00865151 /* App */,
+				93EC3F3524F06A6400865151 /* Extensions */,
+				93EC3F3824F06CE700865151 /* Helpers */,
 				93EC3F2F24F0477800865151 /* Supporting Files */,
 				93EC3F1424F03D4E00865151 /* Lensflare.xcdatamodeld */,
 			);
@@ -136,6 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				93EC3F2424F03F6900865151 /* NetworkManager.swift */,
+				93CEE7FF24F34798001DC401 /* Reachability.swift */,
 				93EC3F2824F046E400865151 /* OverlayDTO.swift */,
 				93EC3F2624F03FE400865151 /* LErrors.swift */,
 				93CEE7D324F29082001DC401 /* HTTPMethod.swift */,
@@ -271,6 +291,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93CEE7FD24F33946001DC401 /* OverlayEntity+CoreDataClass.swift in Sources */,
 				93CEE7D224F29020001DC401 /* UIImageViewExt.swift in Sources */,
 				93EC3F3A24F06CF700865151 /* AlertService.swift in Sources */,
 				93CEE7E824F30392001DC401 /* AppContainer.swift in Sources */,
@@ -280,6 +301,8 @@
 				93EC3F0C24F03D4E00865151 /* AppDelegate.swift in Sources */,
 				93EC3F3C24F0735000865151 /* UIViewController.swift in Sources */,
 				93CEE7E324F2C28B001DC401 /* LFImageIO.swift in Sources */,
+				93CEE7F124F310FE001DC401 /* PersistantManager.swift in Sources */,
+				93CEE7FE24F33946001DC401 /* OverlayEntity+CoreDataProperties.swift in Sources */,
 				93EC3F2524F03F6900865151 /* NetworkManager.swift in Sources */,
 				93CEE7CE24F19C5D001DC401 /* UIImageExt.swift in Sources */,
 				93EC3F1624F03D4E00865151 /* Lensflare.xcdatamodeld in Sources */,
@@ -291,6 +314,7 @@
 				93CEE7D624F2AE3A001DC401 /* UIImage+Orientation.swift in Sources */,
 				93EC3F3224F04D6400865151 /* OverlayCell.swift in Sources */,
 				93EC3F3424F067FB00865151 /* BitmapView.swift in Sources */,
+				93CEE80024F34798001DC401 /* Reachability.swift in Sources */,
 				93EC3F2724F03FE400865151 /* LErrors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
