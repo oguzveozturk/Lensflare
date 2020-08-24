@@ -86,7 +86,10 @@ final class ViewController: UIViewController {
     private func setupNavBar() {
         title = "Lensflare"
         navigationController?.setNavigationBarHidden(false, animated: false)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Change", style: .plain, target: self, action: #selector(self.addImageViewTapped))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveTapped))
+        self.navigationItem.leftBarButtonItem?.isEnabled = false
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
         }
     
     @objc private func saveTapped() {
@@ -185,9 +188,10 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
             self.cleanUpScreen()
             self.createBitMapViewWith(image)
         }
-        
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Change", style: .plain, target: self, action: #selector(self.addImageViewTapped))
+
         dismiss(animated: true) {
+            self.navigationItem.leftBarButtonItem?.isEnabled = true
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
             self.collectionHeightConstraint.constant == 0 ? self.showCollectionView() : nil
         }
     }
